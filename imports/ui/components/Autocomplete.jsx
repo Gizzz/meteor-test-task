@@ -8,32 +8,33 @@ import Vessels from '../../api/vessels/Vessels.js';
 class Autocomplete extends React.Component {
   state = {
     searchTerm: '',
-    searchResults: [],
+    suggestions: [],
+    searchResult: null,
   }
 
   handleChange = (e) => {
     const term = e.target.value;
 
     if (term.trim() === '') {
-      this.setState({ searchResults: [] });
+      this.setState({ suggestions: [] });
       return;
     }
 
-    const searchResults = Vessels.find({ Name: { $regex: `${term}`, $options: 'i' } }).fetch();
-    this.setState({ searchResults });
+    const suggestions = Vessels.find({ Name: { $regex: `${term}`, $options: 'i' } }).fetch();
+    this.setState({ suggestions });
   }
 
   create_searchResultClick_handler = (mmsi) => {
     return () => {
       Meteor.call('vessels.getLocationData', mmsi, (err, res) => {
         // res: contains vessel position data
-        console.log(res);
+        this.setState({ searchResult: res })
       });
     };
   }
 
   render() {
-    const searchResults = this.state.searchResults.map((item, index) => {
+    const suggestions = this.state.suggestions.map((item, index) => {
       return (
         <li key={index} onClick={this.create_searchResultClick_handler(item.MMSI)}>
           {item.Name}
@@ -46,10 +47,14 @@ class Autocomplete extends React.Component {
         <TextField type="text" label="Enter a vessel name" onChange={this.handleChange} />
         {' '}
         <Button variant="outlined">Search</Button>
-        <h3>Search results:</h3>
+        <h3>Suggestions:</h3>
         <ul className="suggestions">
-          {searchResults}
+          {suggestions}
         </ul>
+        <h3>Search result:</h3>
+        <pre>
+          {JSON.stringify(this.state.searchResult, null, 2)}
+        </pre>
       </div>
     );
   }
