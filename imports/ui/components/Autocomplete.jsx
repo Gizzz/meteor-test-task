@@ -1,6 +1,5 @@
 import { Meteor } from 'meteor/meteor';
 import React from 'react';
-import axios from 'axios';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 
@@ -26,15 +25,10 @@ class Autocomplete extends React.Component {
 
   create_searchResultClick_handler = (mmsi) => {
     return () => {
-      // # target server do not support CORS, so need to use methods, maybe
-      //
-      // const url = `https://api.aprs.fi/api/get?name=${mmsi}&what=loc&apikey=109676.BrVSr9i6TpbMbBe&format=json`;
-      // axios.get(url).then(res => console.log(res.data));
-
-      const res = Meteor.call('vessels.getLocationData', mmsi);
-      console.log(res);
-
-      return null;
+      Meteor.call('vessels.getLocationData', mmsi, (err, res) => {
+        // res: contains vessel position data
+        console.log(res);
+      });
     };
   }
 
