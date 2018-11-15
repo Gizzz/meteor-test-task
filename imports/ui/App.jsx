@@ -5,17 +5,18 @@ import Map from './components/Map.jsx';
 
 class App extends React.Component {
   state = {
-    coords: {
-      lat: 59.95,
-      lng: 30.33
-    },
+    coords: null,
+  }
+
+  handleCoordsChange = (coords) => {
+    this.setState({ coords });
   }
 
   render() {
     return (
       <div>
         <h1>Vessel Locate Challenge</h1>
-        <Autocomplete />
+        <Autocomplete onSearchSuccess={this.handleCoordsChange} />
         <br />
         <br />
         <Map coords={this.state.coords} />

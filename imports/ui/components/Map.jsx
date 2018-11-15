@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import GoogleMapReact from 'google-map-react';
 
-const AnyReactComponent = ({ text }) => <div>{text}</div>;
+const AnyReactComponent = ({ text }) => <div style={{ color: 'red' }}>{text}</div>;
 
 class Map extends React.Component {
   render() {
@@ -11,14 +11,18 @@ class Map extends React.Component {
       <div style={{ height: '70vh', width: '100%' }}>
         <GoogleMapReact
           bootstrapURLKeys={{ key: 'AIzaSyAQ4i_puN-HgB8wydbmoC6b9jPp0bo7mUw' }}
-          defaultCenter={this.props.coords}
+          defaultCenter={{ lat: 59.95, lng: 30.33 }}
+          center={this.props.coords}
           defaultZoom={11}
         >
-          <AnyReactComponent
-            lat={59.955413}
-            lng={30.337844}
-            text={'Kreyser Avrora'}
-          />
+          {
+            this.props.coords &&
+            <AnyReactComponent
+              lat={this.props.coords.lat}
+              lng={this.props.coords.lng}
+              text={'X'}
+            />
+          }
         </GoogleMapReact>
       </div>
     );
@@ -26,7 +30,7 @@ class Map extends React.Component {
 }
 
 Map.propTypes = {
-  coords: PropTypes.object.isRequired,
+  coords: PropTypes.object,
 }
 
 export default Map;

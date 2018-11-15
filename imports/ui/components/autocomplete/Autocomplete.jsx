@@ -111,7 +111,6 @@ class Autocomplete extends React.Component {
   state = {
     searchTerm: '',
     suggestions: [],
-    searchResult: null,
   }
 
   handleSuggestionsFetchRequested = ({ value }) => {
@@ -149,8 +148,12 @@ class Autocomplete extends React.Component {
 
     if (item) {
       Meteor.call('vessels.getLocationData', item.MMSI, (err, res) => {
-        this.setState({ searchResult: res.data })
+        const newCoords = {
+          lat: Number(res.data.lat),
+          lng: Number(res.data.lng),
+        };
 
+        this.props.onSearchSuccess(newCoords)
       });
     }
   }
@@ -197,6 +200,7 @@ class Autocomplete extends React.Component {
 
 Autocomplete.propTypes = {
   classes: PropTypes.object.isRequired,
+  onSearchSuccess: PropTypes.func.isRequired,
 };
 
 const AutocompleteWithStyles = withStyles(styles)(Autocomplete);
