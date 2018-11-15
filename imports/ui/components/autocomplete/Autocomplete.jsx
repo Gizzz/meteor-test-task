@@ -9,7 +9,7 @@ import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
 
-import Vessels from '../../api/vessels/Vessels.js';
+import Vessels from '../../../api/vessels/Vessels.js';
 
 window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
 
@@ -190,7 +190,6 @@ class Autocomplete extends React.Component {
             </Paper>
           )}
         />
-
       </div>
     );
   }
