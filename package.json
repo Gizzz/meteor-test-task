@@ -17,7 +17,8 @@
     "react": "^16.6.3",
     "react-autosuggest": "^9.4.2",
     "react-dom": "^16.6.3",
-    "react-router-dom": "^4.3.1"
+    "react-router-dom": "^4.3.1",
+    "simpl-schema": "^1.5.3"
   },
   "meteor": {
     "mainModule": {
