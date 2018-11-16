@@ -1,6 +1,6 @@
 import React from 'react';
 
-import HomeScreen from './HomeScreen.jsx';
+import HomeScreen from './HomeScreen/HomeScreen.jsx';
 
 class App extends React.Component {
   render() {
