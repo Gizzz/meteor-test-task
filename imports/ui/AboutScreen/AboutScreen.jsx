@@ -10,8 +10,15 @@ const styles = theme => ({
   paper: {
     padding: theme.spacing.unit * 2,
   },
-  aboutText: {
-    paddingRight: theme.spacing.unit * 4,
+  aboutTextLeft: {
+    [theme.breakpoints.up('sm')]: {
+      paddingRight: theme.spacing.unit * 2,
+    },
+  },
+  aboutTextRight: {
+    [theme.breakpoints.up('sm')]: {
+      paddingLeft: theme.spacing.unit * 2,
+    },
   }
 });
 
@@ -38,12 +45,12 @@ class AboutScreen extends React.Component {
             <h4>About Us</h4>
             <Grid container>
               <Grid item xs={12} sm={6}>
-                <p className={classes.aboutText}>
+                <p className={classes.aboutTextLeft}>
                   We’ll assume that you have some familiarity with HTML and JavaScript, but you should be able to follow along even if you’re coming from a different programming language. We’ll also assume that you’re familiar with programming concepts like functions, objects, arrays, and to a lesser extent, classes.
                 </p>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <p>
+                <p className={classes.aboutTextRight}>
                   We recommend that you check out the tic-tac-toe game before continuing with the tutorial. One of the features that you’ll notice is that there is a numbered list to the right of the game’s board. This list gives you a history of all of the moves that have occurred in the game, and is updated as the game progresses.
                 </p>
               </Grid>
