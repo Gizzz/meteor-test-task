@@ -11,8 +11,6 @@ import { withStyles } from '@material-ui/core/styles';
 
 import Vessels from '../../../../api/vessels/Vessels.js';
 
-window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
-
 function renderInputComponent(inputProps) {
   const { classes, inputRef = () => {}, ref, ...other } = inputProps;
 

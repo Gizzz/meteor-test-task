@@ -83,7 +83,7 @@ class AboutScreen extends React.Component {
               />
               <br/>
               <br/>
-              <Button variant="outlined">Send</Button>
+              <Button variant="contained" color="primary">Send</Button>
             </Paper>
           </Grid>
         </Grid>
