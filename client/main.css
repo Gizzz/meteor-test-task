@@ -2,11 +2,3 @@ body {
   padding: 10px;
   font-family: 'Roboto', sans-serif;
 }
-
-ul.suggestions li {
-  cursor: pointer;
-}
-
-ul.suggestions li:hover {
-  background-color: #ccc;
-}
