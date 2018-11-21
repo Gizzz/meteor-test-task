@@ -65,6 +65,7 @@ class AboutScreen extends React.Component {
             <Paper className={classes.paper}>
               <TextField
                 label="Email"
+                fullWidth
                 margin="normal"
                 value={this.state.email}
                 onChange={this.handleChange('email')}
@@ -73,6 +74,7 @@ class AboutScreen extends React.Component {
               <br />
               <TextField
                 label="Message"
+                fullWidth
                 margin="normal"
                 multiline
                 rowsMax="4"
