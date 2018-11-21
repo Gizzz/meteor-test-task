@@ -146,6 +146,16 @@ class Autocomplete extends React.Component {
 
     if (item) {
       Meteor.call('vessels.getLocationData', item.MMSI, (err, res) => {
+        if (err) {
+          console.error('Method call finished with error:', err);
+          return;
+        }
+
+        if (!res || !res.data || !res.data.lat || !res.data.lng) {
+          console.error('Incorrect data shape.');
+          return;
+        }
+
         const newCoords = {
           lat: Number(res.data.lat),
           lng: Number(res.data.lng),
