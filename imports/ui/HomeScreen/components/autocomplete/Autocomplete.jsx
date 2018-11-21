@@ -1,157 +1,44 @@
 import { Meteor } from 'meteor/meteor';
 import React from 'react';
 import PropTypes from 'prop-types';
-import Autosuggest from 'react-autosuggest';
-import match from 'autosuggest-highlight/match';
-import parse from 'autosuggest-highlight/parse';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
 import MenuItem from '@material-ui/core/MenuItem';
-import { withStyles } from '@material-ui/core/styles';
 
 import Vessels from '../../../../api/vessels/Vessels.js';
 
-function renderInputComponent(inputProps) {
-  const { classes, inputRef = () => {}, ref, ...other } = inputProps;
-
-  return (
-    <TextField
-      fullWidth
-      InputProps={{
-        inputRef: node => {
-          ref(node);
-          inputRef(node);
-        },
-        classes: {
-          input: classes.input,
-        },
-      }}
-      {...other}
-    />
-  );
-}
-
-function renderSuggestion(suggestion, { query, isHighlighted }) {
-  const matches = match(suggestion.Name, query);
-  const parts = parse(suggestion.Name, matches);
-
-  return (
-    <MenuItem selected={isHighlighted} component="div">
-      <div>
-        {parts.map((part, index) => {
-          return part.highlight ? (
-            <span key={String(index)} style={{ fontWeight: 500 }}>
-              {part.text}
-            </span>
-          ) : (
-            <strong key={String(index)} style={{ fontWeight: 300 }}>
-              {part.text}
-            </strong>
-          );
-        })}
-      </div>
-    </MenuItem>
-  );
-}
-
-function getSuggestions(value, suggestions) {
-  const inputValue = value.trim().toLowerCase();
-  const inputLength = inputValue.length;
-  let count = 0;
-
-  return inputLength === 0
-    ? []
-    : suggestions.filter(suggestion => {
-        const keep =
-          count < 10 && suggestion.Name.toLowerCase().startsWith(inputValue);
-
-        if (keep) {
-          count += 1;
-        }
-
-        return keep;
-      });
-}
-
-function getSuggestionValue(suggestion) {
-  return suggestion.Name;
-}
-
-const styles = theme => ({
-  root: {
-    height: 250,
-    flexGrow: 1,
-  },
-  container: {
-    position: 'relative',
-  },
-  suggestionsContainerOpen: {
-    position: 'absolute',
-    zIndex: 1,
-    marginTop: theme.spacing.unit,
-    left: 0,
-    right: 0,
-  },
-  suggestion: {
-    display: 'block',
-  },
-  suggestionsList: {
-    margin: 0,
-    padding: 0,
-    listStyleType: 'none',
-  },
-  divider: {
-    height: theme.spacing.unit * 2,
-  },
-});
-
 class Autocomplete extends React.Component {
-  state = {
+  initialState = {
     searchTerm: '',
     suggestions: [],
   }
 
-  handleSuggestionsFetchRequested = ({ value }) => {
-    this.setState((prevState) => ({
-      suggestions: getSuggestions(value, prevState.suggestions),
-    }));
-  };
+  state = this.initialState
 
-  handleSuggestionsClearRequested = () => {
-    this.setState({
-      suggestions: [],
-    });
-  };
-
-  handleChange = (event, { newValue }) => {
-    const term = newValue;
-    this.setState({
-      searchTerm: term,
-    });
+  handleChange = (e) => {
+    const term = e.target.value;
 
     if (term.trim() === '') {
-      this.setState({ suggestions: [] });
+      this.setState(this.initialState);
       return;
     }
 
-    const suggestions = Vessels.find({ Name: { $regex: `^${term.trim()}`, $options: 'i' } }).fetch();
-    this.setState({ suggestions });
-  };
+    const suggestions = Vessels.find({ Name: { $regex: `^${term}`, $options: 'i' } }).fetch();
+    this.setState({
+      searchTerm: term,
+      suggestions,
+    });
+  }
 
-  handleKeydown = (e) => {
-    if (e.key !== 'Enter') return;
-    if (this.state.searchTerm === '') return;
-
-    const item = Vessels.find({ Name: this.state.searchTerm }).fetch()[0];
-
-    if (item) {
-      Meteor.call('vessels.getLocationData', item.MMSI, (err, res) => {
+  create_searchResultClick_handler = (mmsi) => {
+    return () => {
+      Meteor.call('vessels.getLocationData', mmsi, (err, res) => {
         if (err) {
           console.error('Method call finished with error:', err);
           return;
         }
 
-        if (!res || !res.data || !res.data.lat || !res.data.lng) {
+        if (!res || !res.data || !res.data.lat || !res.data.lng || !res.data.name) {
           console.error('Incorrect data shape.');
           return;
         }
@@ -161,55 +48,42 @@ class Autocomplete extends React.Component {
           lng: Number(res.data.lng),
         };
 
+        this.setState({
+          searchTerm: res.data.name,
+          suggestions: [],
+        });
+
         this.props.onSearchSuccess(newCoords)
       });
-    }
+    };
   }
 
   render() {
-    const { classes } = this.props;
-
-    const autosuggestProps = {
-      renderInputComponent,
-      suggestions: this.state.suggestions,
-      onSuggestionsFetchRequested: this.handleSuggestionsFetchRequested,
-      onSuggestionsClearRequested: this.handleSuggestionsClearRequested,
-      getSuggestionValue,
-      renderSuggestion,
-    };
+    const suggestions = this.state.suggestions.map((item, index) => {
+      return (
+        <MenuItem key={index} selected={false} component="div" onClick={this.create_searchResultClick_handler(item.MMSI)}>
+          <div>
+            <span>
+              {item.Name}
+            </span>
+          </div>
+        </MenuItem>
+      );
+    });
 
     return (
       <div>
-        <Autosuggest
-          {...autosuggestProps}
-          inputProps={{
-            classes,
-            placeholder: 'Search a country (start with a)',
-            value: this.state.searchTerm,
-            onChange: this.handleChange,
-            onKeyDown: this.handleKeydown,
-          }}
-          theme={{
-            container: classes.container,
-            suggestionsContainerOpen: classes.suggestionsContainerOpen,
-            suggestionsList: classes.suggestionsList,
-            suggestion: classes.suggestion,
-          }}
-          renderSuggestionsContainer={options => (
-            <Paper {...options.containerProps} square>
-              {options.children}
-            </Paper>
-          )}
-        />
+        <TextField type="text" label="Enter a vessel name" fullWidth value={this.state.searchTerm} onChange={this.handleChange} />
+        <Paper square>
+          {suggestions}
+        </Paper>
       </div>
     );
   }
 }
 
 Autocomplete.propTypes = {
-  classes: PropTypes.object.isRequired,
   onSearchSuccess: PropTypes.func.isRequired,
 };
 
-const AutocompleteWithStyles = withStyles(styles)(Autocomplete);
-export default AutocompleteWithStyles;
+export default Autocomplete;
