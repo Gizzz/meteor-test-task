@@ -124,17 +124,17 @@ class Autocomplete extends React.Component {
   };
 
   handleChange = (event, { newValue }) => {
-    const term = newValue.trim();
+    const term = newValue;
     this.setState({
       searchTerm: term,
     });
 
-    if (term === '') {
+    if (term.trim() === '') {
       this.setState({ suggestions: [] });
       return;
     }
 
-    const suggestions = Vessels.find({ Name: { $regex: `^${term}`, $options: 'i' } }).fetch();
+    const suggestions = Vessels.find({ Name: { $regex: `^${term.trim()}`, $options: 'i' } }).fetch();
     this.setState({ suggestions });
   };
 
