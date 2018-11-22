@@ -75,13 +75,6 @@ class Autocomplete extends React.Component {
     }
   }
 
-  handleBlur = () => {
-    this.setState({
-      suggestions: [],
-      selectedSuggestionIndex: null,
-    });
-  }
-
   create_searchResultClick_handler = (mmsi) => {
     return () => {
       this.performLocationSearch(mmsi);
@@ -141,7 +134,6 @@ class Autocomplete extends React.Component {
           value={this.state.searchTerm}
           onChange={this.handleChange}
           onKeyDown={this.handleKeydown}
-          onBlur={this.handleBlur}
         />
         <Paper square>
           {suggestions}
