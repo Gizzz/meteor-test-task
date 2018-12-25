@@ -10,7 +10,8 @@ Meteor.methods({
     check(mmsi, Number);
 
     if (Meteor.isServer) {
-      const url = `https://api.aprs.fi/api/get?name=${mmsi}&what=loc&apikey=109676.BrVSr9i6TpbMbBe&format=json`;
+      const apiKey = Meteor.settings.private.shipLocationApiKey;
+      const url = `https://api.aprs.fi/api/get?name=${mmsi}&what=loc&apikey=${apiKey}&format=json`;
       const result = await axios.get(url).then(res => res.data);
 
       if (result.entries) {
